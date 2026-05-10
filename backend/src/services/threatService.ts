@@ -14,9 +14,7 @@ export const startThreatSimulation = (io: any) => {
       ip: `192.168.1.${Math.floor(Math.random() * 255)}`
     };
 
-    console.log(`🚀 New Threat Detected: ${threat.type} from ${threat.location}`);
     
-    // This sends the threat to the Frontend
     io.emit('new-threat', threat);
   }, 5000);
 };
