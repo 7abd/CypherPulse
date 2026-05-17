@@ -13,10 +13,8 @@ import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import cors from 'cors';
 
-// Initialize Firebase
 import './config/firebase';
 
-// Initialize threat service
 import './services/threatService';
 
 const app = express();
@@ -28,16 +26,12 @@ const io: SocketIOServer = new SocketIOServer(server, {
   }
 });
 
-// Socket handlers
-// Initialize threat service
 import { startThreatSimulation } from './services/threatService';
 
-// ... (after your 'io' is defined) ...
 startThreatSimulation(io);
 import baseSocketHandler from './sockets/base';
 baseSocketHandler(io);
 
-// REST routes
 import firestoreTestRoutes from './routes/firestoreTest';
 app.use('/api', firestoreTestRoutes);
 

@@ -8,14 +8,22 @@ const serviceAccount = {
     : undefined,
 };
 
-if (!serviceAccount.projectId || !serviceAccount.clientEmail || !serviceAccount.privateKey) {
-  console.warn('Missing Firebase Admin SDK environment variables. Firebase features will not work.');
-} else {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-  });
+if (
+  !serviceAccount.projectId ||
+  !serviceAccount.clientEmail ||
+  !serviceAccount.privateKey
+) {
+  throw new Error('Firebase env variables missing');
 }
 
-export default admin;
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(
+      serviceAccount as admin.ServiceAccount
+    ),
+  });
 
-module.exports = admin;
+  console.log('Firebase initialized');
+}
+
+export const db = admin.firestore();

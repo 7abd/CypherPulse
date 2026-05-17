@@ -1,5 +1,6 @@
 import express, { Router, Request, Response } from 'express';
-import admin from '../config/firebase';
+import { db } from '../config/firebase'; // Correctly importing the tool
+import * as admin from 'firebase-admin'; // Still need this for FieldValue
 
 const router: Router = express.Router();
 
@@ -9,8 +10,8 @@ router.get('/health', (req: Request, res: Response) => {
 
 const runFirestoreHealthCheck = async (res: Response) => {
   try {
-    const firestore = admin.firestore();
-    const docRef = firestore.collection('sentinel_tests').doc();
+    const docRef = db.collection('sentinel_tests').doc(); 
+    
     await docRef.set({
       testName: 'backend-firebase-connection',
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
