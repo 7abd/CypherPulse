@@ -15,8 +15,6 @@ import cors from 'cors';
 
 import './config/firebase';
 
-import './services/threatService';
-
 const app = express();
 const server = http.createServer(app);
 const io: SocketIOServer = new SocketIOServer(server, {
@@ -34,6 +32,10 @@ baseSocketHandler(io);
 
 import firestoreTestRoutes from './routes/firestoreTest';
 app.use('/api', firestoreTestRoutes);
+
+app.get('/', (_req, res) => {
+  res.json({ name: 'CypherPulse API', status: 'running' });
+});
 
 const PORT = process.env.PORT || 3001;
 
