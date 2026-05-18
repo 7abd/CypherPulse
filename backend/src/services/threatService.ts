@@ -1,20 +1,31 @@
-import getSocket from "../sockets/base"
+import { db } from '../config/firebase';
 
-const threatTypes = ['Brute Force', 'SQL Injection', 'DDoS', 'Malware detected'];
+const threatTypes = ['Brute Force', 'SQL Injection', 'DDoS', 'Malware', 'Phishing'];
 const locations = ['New York, USA', 'London, UK', 'Tokyo, Japan', 'Paris, France', 'Berlin, Germany'];
+const severities = ['Low', 'Medium', 'High', 'Critical'];
+
+const pickRandom = <T>(items: T[]): T => items[Math.floor(Math.random() * items.length)];
+
+const createThreat = () => ({
+  type: pickRandom(threatTypes),
+  location: pickRandom(locations),
+  severity: pickRandom(severities),
+  ip: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+  timestamp: new Date().toISOString(),
+});
 
 export const startThreatSimulation = (io: any) => {
-  setInterval(() => {
-    const threat = {
-      id: Math.random().toString(36).substr(2, 9),
-      type: threatTypes[Math.floor(Math.random() * threatTypes.length)],
-      location: locations[Math.floor(Math.random() * locations.length)],
-      timestamp: new Date().toISOString(),
-      severity: Math.random() > 0.7 ? 'High' : 'Medium',
-      ip: `192.168.1.${Math.floor(Math.random() * 255)}`
-    };
+  console.log('Threat simulation started');
 
-    
-    io.emit('new-threat', threat);
-  }, 5000);
+  setInterval(async () => {
+    try {
+      const threat = createThreat();
+      const docRef = await db.collection('threats').add(threat);
+      const threatWithId = { id: docRef.id, ...threat };
+
+      io.emit('new-threat', threatWithId);
+    } catch (err) {
+      console.error('Threat simulation failed:', err);
+    }
+  }, 10000);
 };
